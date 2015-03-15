@@ -1,13 +1,13 @@
 package leod7k.quizmica_cliente;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.net.wifi.WifiManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.Formatter;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.EditText;
 
-import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
@@ -24,42 +24,52 @@ public class MainActivity extends ActionBarActivity {
 
     public static final int SERVER_PORT = 2002;
 
-    PrintWriter out = null;
-    BufferedReader in = null;
-    Socket socket = null;
-
     @Click
-    public void button() {
-        out.println("cliquei");
-        out.flush();
+    public void btnConectar() {
+        String ip = pegarIp();
+        if (ip == null) {
+            final EditText input = new EditText(this);
+            new AlertDialog.Builder(this)
+                    .setTitle("Digite o IP do servidor")
+                    .setView(input)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    conectar(input.getText().toString());
+                                }})
+                    .setNegativeButton("Cancelar", null).show();
+        } else {
+            conectar(ip);
+        }
+
+        //out.println("cliquei");
+        //out.flush();
     }
 
-    @AfterViews
-    public void aoCriar() {
-        conectar();
-    }
-
-    @Background
-    protected void conectar() {
+    private String pegarIp() {
         WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
         String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
 
-        String serverHostName = IpGetter.getIp(ip);
+        return IpGetter.getIp(ip);
+    }
+
+    @Background
+    protected void conectar(String ip) {
+        PrintWriter out;
+        BufferedReader in;
+        Socket socket;
 
         try {
             // Connect to Server
-            socket = new Socket(serverHostName, 2002);
+            socket = new Socket(ip, SERVER_PORT);
             in = new BufferedReader(new InputStreamReader(
                     socket.getInputStream()));
             out = new PrintWriter(new OutputStreamWriter(
                     socket.getOutputStream()));
-            Log.i("jaba", "Connected to server " + serverHostName + ":"
+            Log.i("jaba", "Connected to server " + ip + ":"
                     + SERVER_PORT);
         } catch (IOException ioe) {
-            Log.i("jaba", "Can not establish connection to " + serverHostName
+            Log.i("jaba", "Can not establish connection to " + ip
                     + ":" + SERVER_PORT);
-            ioe.printStackTrace();
-            finish();
             return;
         }
 
@@ -73,33 +83,11 @@ public class MainActivity extends ActionBarActivity {
         super.onDestroy();
 
         try {
-            socket.close();
-            in.close();
-            out.close();
-        } catch (IOException e) {
+            //socket.close();
+            //in.close();
+            //out.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

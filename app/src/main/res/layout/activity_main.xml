@@ -8,8 +8,8 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button"
+        android:text="@string/btnConectar"
+        android:id="@+id/btnConectar"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 

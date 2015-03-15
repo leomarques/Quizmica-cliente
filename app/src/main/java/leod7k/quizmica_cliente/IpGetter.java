@@ -1,7 +1,5 @@
 package leod7k.quizmica_cliente;
 
-import android.util.Log;
-
 import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -26,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class IpGetter {
 
-    private static final String TAG = "IpGetter";
+    //private static final String TAG = "IpGetter";
 
     /**
      * Method which should return one not-null object with String that is an ip number.
@@ -41,7 +39,7 @@ public class IpGetter {
                                                     final String ip,
                                                     final int port,
                                                     final int timeout) {
-        Log.d(TAG, "In portIsOpen");
+        //Log.d(TAG, "In portIsOpen");
         return executorService.submit(new Callable<String>() {
             Socket socket;
             PrintWriter mOut;
@@ -54,7 +52,7 @@ public class IpGetter {
                     mOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
                     mOut.println("test");
                     mOut.flush();
-                    Log.d("portIsOpen", "ip: " + ip);
+                    //Log.d("portIsOpen", "ip: " + ip);
                     return ip;
                 } catch (Exception ex) {
                     return null;
@@ -102,7 +100,7 @@ public class IpGetter {
         for (final Future<String> future : futures) {
             try {
                 if (future.get() != null) {
-                    Log.d(TAG, "Local Ip: " + future.get());
+                    //Log.d(TAG, "Local Ip: " + future.get());
                     return future.get();
                 }
             } catch (InterruptedException e) {
