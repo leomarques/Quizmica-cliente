@@ -1,14 +1,17 @@
 package leod7k.quizmica_cliente;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 
@@ -24,25 +27,78 @@ public class MainActivity extends ActionBarActivity {
 
     public static final int SERVER_PORT = 2002;
 
+    PrintWriter out;
+    BufferedReader in;
+    Socket socket;
+
     @Click
     public void btnConectar() {
-        String ip = pegarIp();
-        if (ip == null) {
-            final EditText input = new EditText(this);
-            new AlertDialog.Builder(this)
-                    .setTitle("Digite o IP do servidor")
-                    .setView(input)
-                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    conectar(input.getText().toString());
-                                }})
-                    .setNegativeButton("Cancelar", null).show();
-        } else {
-            conectar(ip);
+        new AutoConectaAsync(this).execute();
+    }
+
+    private class AutoConectaAsync extends AsyncTask<Void, Void, Boolean> {
+        private final Activity act;
+        private ProgressDialog pd;
+
+        AutoConectaAsync(Activity paramAct) {
+            act = paramAct;
         }
 
-        //out.println("cliquei");
-        //out.flush();
+        @Override
+        protected void onPreExecute() {
+            pd = ProgressDialog.show(act, "", "Conectando", true, true);
+
+        }
+        protected Boolean doInBackground(Void... arg0) {
+            String ip = pegarIp();
+            return ip != null && conectar(ip);
+        }
+
+        protected void onPostExecute(Boolean result) {
+            pd.dismiss();
+
+            if (result) {
+                Toast.makeText(act, "Conectou", Toast.LENGTH_SHORT).show();
+            } else {
+                final EditText input = new EditText(act);
+                input.setText("192.168.0.13");
+                new AlertDialog.Builder(act)
+                        .setTitle("Digite o IP do servidor")
+                        .setView(input)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                new ConectaAsync(act, input.getText().toString()).execute();
+                            }
+                        })
+                        .setNegativeButton("Cancelar", null).show();
+            }
+        }
+    }
+
+    private class ConectaAsync extends AsyncTask<Void, Void, Boolean> {
+        private final Activity act;
+        private final String ip;
+        private ProgressDialog pd;
+
+        ConectaAsync(Activity paramAct, String paramIp) {
+            act = paramAct;
+            ip = paramIp;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            pd = ProgressDialog.show(act, "", "Conectando", true, true);
+
+        }
+        protected Boolean doInBackground(Void... arg0) {
+            return conectar(ip);
+        }
+
+        protected void onPostExecute(Boolean result) {
+            pd.dismiss();
+
+            Toast.makeText(act, result ? "Conectou" : "Servidor não encontrado", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private String pegarIp() {
@@ -52,13 +108,8 @@ public class MainActivity extends ActionBarActivity {
         return IpGetter.getIp(ip);
     }
 
-    @Background
-    protected void conectar(String ip) {
-        PrintWriter out;
-        BufferedReader in;
-        Socket socket;
-
-        try {
+    private boolean conectar(String ip) {
+       try {
             // Connect to Server
             socket = new Socket(ip, SERVER_PORT);
             in = new BufferedReader(new InputStreamReader(
@@ -70,12 +121,14 @@ public class MainActivity extends ActionBarActivity {
         } catch (IOException ioe) {
             Log.i("jaba", "Can not establish connection to " + ip
                     + ":" + SERVER_PORT);
-            return;
+            return false;
         }
 
         Receiver receiver = new Receiver(in);
         //receiver.setDaemon(true);
         receiver.start();
+
+        return true;
     }
 
     @Override
