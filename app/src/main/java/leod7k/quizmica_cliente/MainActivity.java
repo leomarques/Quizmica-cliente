@@ -27,7 +27,6 @@ public class MainActivity extends ActionBarActivity {
 
     public static final int SERVER_PORT = 2002;
 
-    PrintWriter out;
     BufferedReader in;
     Socket socket;
 
@@ -59,6 +58,8 @@ public class MainActivity extends ActionBarActivity {
 
             if (result) {
                 Toast.makeText(act, "Conectou", Toast.LENGTH_SHORT).show();
+
+                RespostasAct_.intent(act).start();
             } else {
                 final EditText input = new EditText(act);
                 input.setText("192.168.0.13");
@@ -97,6 +98,9 @@ public class MainActivity extends ActionBarActivity {
         protected void onPostExecute(Boolean result) {
             pd.dismiss();
 
+            if (result)
+                RespostasAct_.intent(act).start();
+
             Toast.makeText(act, result ? "Conectou" : "Servidor não encontrado", Toast.LENGTH_SHORT).show();
         }
     }
@@ -104,6 +108,8 @@ public class MainActivity extends ActionBarActivity {
     private String pegarIp() {
         WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
         String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+
+        App.inst().ip = ip;
 
         return IpGetter.getIp(ip);
     }
@@ -114,7 +120,7 @@ public class MainActivity extends ActionBarActivity {
             socket = new Socket(ip, SERVER_PORT);
             in = new BufferedReader(new InputStreamReader(
                     socket.getInputStream()));
-            out = new PrintWriter(new OutputStreamWriter(
+            App.inst().out = new PrintWriter(new OutputStreamWriter(
                     socket.getOutputStream()));
             Log.i("jaba", "Connected to server " + ip + ":"
                     + SERVER_PORT);
