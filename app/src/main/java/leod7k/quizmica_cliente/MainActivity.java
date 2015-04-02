@@ -48,6 +48,7 @@ public class MainActivity extends ActionBarActivity {
             pd = ProgressDialog.show(act, "", "Conectando", true, true);
 
         }
+
         protected Boolean doInBackground(Void... arg0) {
             String ip = pegarIp();
             return ip != null && conectar(ip);
@@ -62,7 +63,7 @@ public class MainActivity extends ActionBarActivity {
                 RespostasAct_.intent(act).start();
             } else {
                 final EditText input = new EditText(act);
-                input.setText("192.168.0.13");
+                input.setText("192.168.0.1");
                 new AlertDialog.Builder(act)
                         .setTitle("Digite o IP do servidor")
                         .setView(input)
@@ -91,6 +92,7 @@ public class MainActivity extends ActionBarActivity {
             pd = ProgressDialog.show(act, "", "Conectando", true, true);
 
         }
+
         protected Boolean doInBackground(Void... arg0) {
             return conectar(ip);
         }
@@ -115,7 +117,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private boolean conectar(String ip) {
-       try {
+        try {
             // Connect to Server
             socket = new Socket(ip, SERVER_PORT);
             in = new BufferedReader(new InputStreamReader(

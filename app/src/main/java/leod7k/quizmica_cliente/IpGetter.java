@@ -72,8 +72,8 @@ public class IpGetter {
     /**
      * Method used in TCPClient constructor in AsyncTask for getting String with proper IP number.
      *
-     * @return After looping from 192.168.1.0 to 192.168.1.255 should return one String with ip.
      * @param ip
+     * @return After looping from 192.168.1.0 to 192.168.1.255 should return one String with ip.
      */
     public static String getIp(String ip) {
 
