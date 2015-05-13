@@ -32,7 +32,18 @@ public class MainActivity extends ActionBarActivity {
 
     @Click
     public void btnConectar() {
-        new AutoConectaAsync(this).execute();
+        final EditText input = new EditText(this);
+        input.setText("192.168.0.1");
+        final Activity act = this;
+        new AlertDialog.Builder(this)
+                .setTitle("Digite o IP do servidor")
+                .setView(input)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        new ConectaAsync(act, input.getText().toString()).execute();
+                    }
+                })
+                .setNegativeButton("Cancelar", null).show();
     }
 
     private class AutoConectaAsync extends AsyncTask<Void, Void, Boolean> {
@@ -94,6 +105,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         protected Boolean doInBackground(Void... arg0) {
+            pegarProprioIp();
             return conectar(ip);
         }
 
@@ -108,12 +120,17 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private String pegarIp() {
+        String ip = pegarProprioIp();
+
+        return IpGetter.getIp(ip);
+    }
+
+    private String pegarProprioIp() {
         WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
         String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
 
         App.inst().ip = ip;
-
-        return IpGetter.getIp(ip);
+        return ip;
     }
 
     private boolean conectar(String ip) {
