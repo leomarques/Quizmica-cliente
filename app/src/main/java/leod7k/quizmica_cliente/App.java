@@ -8,8 +8,8 @@ public class App extends Application {
 
     static App inst;
 
-    PrintWriter out;
-    String ip;
+    private PrintWriter out;
+    String ip, nome;
 
     public App() {
         inst = this;
@@ -17,5 +17,22 @@ public class App extends Application {
 
     public static App inst() {
         return inst;
+    }
+
+    public void initOut(PrintWriter printWriter) {
+        out = printWriter;
+    }
+
+    public void enviar(String mensagem) {
+        out.println(mensagem);
+        out.flush();
+    }
+
+    public void enviarResposta(String resposta) {
+        enviar("r;".concat(resposta));
+    }
+
+    public void enviarNome(String nome) {
+        enviar("n;".concat(nome));
     }
 }

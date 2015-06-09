@@ -13,4 +13,14 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="Nome"
+        android:ems="10"
+        android:id="@+id/editText"
+        android:layout_above="@+id/btnConectar"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

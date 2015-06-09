@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,10 +31,15 @@ public class MainActivity extends ActionBarActivity {
     BufferedReader in;
     Socket socket;
 
+    @ViewById
+    EditText editText;
+
     @Click
     public void btnConectar() {
+        App.inst().nome = editText.getText().toString();
+
         final EditText input = new EditText(this);
-        input.setText("192.168.0.1");
+        input.setText("192.168.0.13");
         final Activity act = this;
         new AlertDialog.Builder(this)
                 .setTitle("Digite o IP do servidor")
@@ -74,7 +80,7 @@ public class MainActivity extends ActionBarActivity {
                 RespostasAct_.intent(act).start();
             } else {
                 final EditText input = new EditText(act);
-                input.setText("192.168.0.1");
+                input.setText("192.168.0.13");
                 new AlertDialog.Builder(act)
                         .setTitle("Digite o IP do servidor")
                         .setView(input)
@@ -112,8 +118,11 @@ public class MainActivity extends ActionBarActivity {
         protected void onPostExecute(Boolean result) {
             pd.dismiss();
 
-            if (result)
+            if (result) {
                 RespostasAct_.intent(act).start();
+
+                App.inst().enviarNome(App.inst.nome);
+            }
 
             Toast.makeText(act, result ? "Conectou" : "Servidor não encontrado", Toast.LENGTH_SHORT).show();
         }
@@ -139,8 +148,8 @@ public class MainActivity extends ActionBarActivity {
             socket = new Socket(ip, SERVER_PORT);
             in = new BufferedReader(new InputStreamReader(
                     socket.getInputStream()));
-            App.inst().out = new PrintWriter(new OutputStreamWriter(
-                    socket.getOutputStream()));
+            App.inst().initOut(new PrintWriter(new OutputStreamWriter(
+                    socket.getOutputStream())));
             Log.i("jaba", "Connected to server " + ip + ":"
                     + SERVER_PORT);
         } catch (IOException ioe) {

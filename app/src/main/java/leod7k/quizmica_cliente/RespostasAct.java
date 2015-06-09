@@ -10,26 +10,22 @@ public class RespostasAct extends ActionBarActivity {
 
     @Click
     public void buttonA() {
-        App.inst().out.println(App.inst.ip + " respondeu 'A'");
-        App.inst().out.flush();
+        App.inst().enviarResposta("A");
     }
 
     @Click
     public void buttonB() {
-        App.inst().out.println(App.inst.ip + " respondeu 'B'");
-        App.inst().out.flush();
+        App.inst().enviarResposta("B");
     }
 
     @Click
     public void buttonC() {
-        App.inst().out.println(App.inst.ip + " respondeu 'C'");
-        App.inst().out.flush();
+        App.inst().enviarResposta("C");
     }
 
     @Click
     public void buttonD() {
-        App.inst().out.println(App.inst.ip + " respondeu 'D'");
-        App.inst().out.flush();
+        App.inst().enviarResposta("D");
     }
 
 }
