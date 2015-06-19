@@ -38,18 +38,7 @@ public class MainActivity extends ActionBarActivity {
     public void btnConectar() {
         App.inst().nome = editText.getText().toString();
 
-        final EditText input = new EditText(this);
-        input.setText("192.168.0.13");
-        final Activity act = this;
-        new AlertDialog.Builder(this)
-                .setTitle("Digite o IP do servidor")
-                .setView(input)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        new ConectaAsync(act, input.getText().toString()).execute();
-                    }
-                })
-                .setNegativeButton("Cancelar", null).show();
+        new AutoConectaAsync(this).execute();
     }
 
     private class AutoConectaAsync extends AsyncTask<Void, Void, Boolean> {
@@ -78,6 +67,8 @@ public class MainActivity extends ActionBarActivity {
                 Toast.makeText(act, "Conectou", Toast.LENGTH_SHORT).show();
 
                 RespostasAct_.intent(act).start();
+
+                App.inst().enviarNome(App.inst.nome);
             } else {
                 final EditText input = new EditText(act);
                 input.setText("192.168.0.13");

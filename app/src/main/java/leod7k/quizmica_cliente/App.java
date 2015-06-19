@@ -23,7 +23,7 @@ public class App extends Application {
         out = printWriter;
     }
 
-    public void enviar(String mensagem) {
+    private void enviar(String mensagem) {
         out.println(mensagem);
         out.flush();
     }
