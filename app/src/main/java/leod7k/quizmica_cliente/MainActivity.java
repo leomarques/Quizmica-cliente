@@ -30,6 +30,7 @@ public class MainActivity extends ActionBarActivity {
 
     BufferedReader in;
     Socket socket;
+    Receiver receiver;
 
     @ViewById
     EditText editText;
@@ -52,7 +53,6 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPreExecute() {
             pd = ProgressDialog.show(act, "", "Conectando", true, true);
-
         }
 
         protected Boolean doInBackground(Void... arg0) {
@@ -149,7 +149,7 @@ public class MainActivity extends ActionBarActivity {
             return false;
         }
 
-        Receiver receiver = new Receiver(in);
+        receiver = new Receiver(in);
         //receiver.setDaemon(true);
         receiver.start();
 
@@ -161,9 +161,13 @@ public class MainActivity extends ActionBarActivity {
         super.onDestroy();
 
         try {
-            //socket.close();
-            //in.close();
-            //out.close();
+            if (socket != null)
+                socket.close();
+            if (in != null)
+                in.close();
+            if (receiver != null)
+                receiver.interrupt();
+            App.inst().closeOut();
         } catch (Exception e) {
             e.printStackTrace();
         }

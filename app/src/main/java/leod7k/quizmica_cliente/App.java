@@ -35,4 +35,8 @@ public class App extends Application {
     public void enviarNome(String nome) {
         enviar("n;".concat(nome));
     }
+
+    public void closeOut() {
+        out.close();
+    }
 }
