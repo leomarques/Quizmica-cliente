@@ -39,7 +39,11 @@ public class MainActivity extends ActionBarActivity {
     public void btnConectar() {
         App.inst().nome = editText.getText().toString();
 
-        new AutoConectaAsync(this).execute();
+        if (socket != null && socket.isConnected()) {
+            RespostasAct_.intent(this).start();
+        } else {
+            new AutoConectaAsync(this).execute();
+        }
     }
 
     private class AutoConectaAsync extends AsyncTask<Void, Void, Boolean> {
