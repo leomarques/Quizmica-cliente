@@ -147,7 +147,7 @@ public class MainActivity extends ActionBarActivity {
                     socket.getOutputStream())));
             Log.i("jaba", "Connected to server " + ip + ":"
                     + SERVER_PORT);
-        } catch (IOException ioe) {
+        } catch (Exception ioe) {
             Log.i("jaba", "Can not establish connection to " + ip
                     + ":" + SERVER_PORT);
             return false;
