@@ -6,25 +6,28 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
+import android.os.SystemClock;
+import android.support.v7.app.AppCompatActivity;
 import android.text.format.Formatter;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 
 @EActivity(R.layout.activity_main)
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     public static final int SERVER_PORT = 2002;
 
@@ -33,17 +36,25 @@ public class MainActivity extends ActionBarActivity {
     Receiver receiver;
 
     @ViewById
-    EditText editText;
+    Button conectar_bt;
+
+    @ViewById
+    EditText nome_et;
+
+    @AfterViews
+    public void afterViews() {
+        App.setIn(false);
+        nome_et.setText(App.getNome());
+    }
 
     @Click
-    public void btnConectar() {
-        App.inst().nome = editText.getText().toString();
+    public void conectar_bt() {
+        String nome = nome_et.getText().toString();
+        if (nome.isEmpty())
+            return;
+        App.inst().nome = nome;
 
-        if (socket != null && socket.isConnected()) {
-            RespostasAct_.intent(this).start();
-        } else {
-            new AutoConectaAsync(this).execute();
-        }
+        new AutoConectaAsync(this).execute();
     }
 
     private class AutoConectaAsync extends AsyncTask<Void, Void, Boolean> {
@@ -60,7 +71,10 @@ public class MainActivity extends ActionBarActivity {
         }
 
         protected Boolean doInBackground(Void... arg0) {
-            String ip = pegarIp();
+            String ip = App.pegaUltimoIP();
+            if (!ip.isEmpty() && conectar(ip))
+                return true;
+            ip = pegarIp();
             return ip != null && conectar(ip);
         }
 
@@ -68,11 +82,9 @@ public class MainActivity extends ActionBarActivity {
             pd.dismiss();
 
             if (result) {
-                Toast.makeText(act, "Conectou", Toast.LENGTH_SHORT).show();
-
-                RespostasAct_.intent(act).start();
-
-                App.inst().enviarNome(App.inst.nome);
+                Toast.makeText(act, "Conectado", Toast.LENGTH_LONG).show();
+                somebotoes();
+                App.salvaNome();
             } else {
                 final EditText input = new EditText(act);
                 input.setText("192.168.0.13");
@@ -106,7 +118,6 @@ public class MainActivity extends ActionBarActivity {
         }
 
         protected Boolean doInBackground(Void... arg0) {
-            pegarProprioIp();
             return conectar(ip);
         }
 
@@ -114,13 +125,16 @@ public class MainActivity extends ActionBarActivity {
             pd.dismiss();
 
             if (result) {
-                RespostasAct_.intent(act).start();
-
-                App.inst().enviarNome(App.inst.nome);
+                somebotoes();
+                App.salvaNome();
             }
-
-            Toast.makeText(act, result ? "Conectou" : "Servidor não encontrado", Toast.LENGTH_SHORT).show();
+            Toast.makeText(act, result ? "Conectado" : "Servidor não encontrado", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void somebotoes() {
+        nome_et.setVisibility(View.GONE);
+        conectar_bt.setVisibility(View.GONE);
     }
 
     private String pegarIp() {
@@ -141,6 +155,7 @@ public class MainActivity extends ActionBarActivity {
         try {
             // Connect to Server
             socket = new Socket(ip, SERVER_PORT);
+
             in = new BufferedReader(new InputStreamReader(
                     socket.getInputStream()));
             App.inst().initOut(new PrintWriter(new OutputStreamWriter(
@@ -153,11 +168,23 @@ public class MainActivity extends ActionBarActivity {
             return false;
         }
 
-        receiver = new Receiver(in);
+        receiver = new Receiver(this, in);
         //receiver.setDaemon(true);
         receiver.start();
 
-        return true;
+        App.inst().enviarAuth();
+
+        int r = 0;
+        do {
+            SystemClock.sleep(2000);
+        } while (r++ < 3 && !App.getIn());
+
+        if (App.getIn()) {
+            App.salvarUltimoIP(ip);
+            return true;
+        }
+
+        return false;
     }
 
     @Override

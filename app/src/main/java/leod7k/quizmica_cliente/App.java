@@ -1,6 +1,8 @@
 package leod7k.quizmica_cliente;
 
 import android.app.Application;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import java.io.PrintWriter;
 
@@ -32,11 +34,47 @@ public class App extends Application {
         enviar("r;".concat(resposta));
     }
 
-    public void enviarNome(String nome) {
-        enviar("n;".concat(nome));
-    }
-
     public void closeOut() {
         out.close();
+    }
+
+    public void enviarAuth() {
+        enviar("a;".concat(nome));
+    }
+
+    public static void setIn(Boolean value) {
+        SharedPreferences mSettings = PreferenceManager.getDefaultSharedPreferences(App.inst());
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putBoolean("in", value);
+        editor.apply();
+    }
+
+    public static boolean getIn() {
+        SharedPreferences mSettings = PreferenceManager.getDefaultSharedPreferences(App.inst());
+        return mSettings.getBoolean("in", false);
+    }
+
+    public static String getNome() {
+        SharedPreferences mSettings = PreferenceManager.getDefaultSharedPreferences(App.inst());
+        return mSettings.getString("nome", "");
+    }
+
+    public static void salvaNome() {
+        SharedPreferences mSettings = PreferenceManager.getDefaultSharedPreferences(App.inst());
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putString("nome", inst().nome);
+        editor.apply();
+    }
+
+    public static String pegaUltimoIP() {
+        SharedPreferences mSettings = PreferenceManager.getDefaultSharedPreferences(App.inst());
+        return mSettings.getString("ultmoip", "");
+    }
+
+    public static void salvarUltimoIP(String ip) {
+        SharedPreferences mSettings = PreferenceManager.getDefaultSharedPreferences(App.inst());
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putString("ultmoip", ip);
+        editor.apply();
     }
 }

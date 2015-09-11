@@ -1,13 +1,14 @@
 package leod7k.quizmica_cliente;
 
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 
 @EActivity(R.layout.respostas)
-public class RespostasAct extends ActionBarActivity {
+public class RespostasAct extends AppCompatActivity {
 
     @Click
     public void buttonA() {

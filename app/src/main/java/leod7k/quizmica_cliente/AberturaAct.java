@@ -1,13 +1,13 @@
 package leod7k.quizmica_cliente;
 
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 
 @EActivity(R.layout.activity_main2)
-public class Main2Activity extends ActionBarActivity {
+public class AberturaAct extends AppCompatActivity {
 
     @AfterViews
     public void afterViews() {
