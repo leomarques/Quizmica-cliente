@@ -13,7 +13,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity_"
+            android:name=".AberturaAct_"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".RespostasAct_" />
-        <activity android:name=".AberturaAct_" />
+        <activity android:name=".MainActivity_" />
     </application>
 
 </manifest>

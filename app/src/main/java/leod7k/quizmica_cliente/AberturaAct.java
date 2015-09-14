@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 
-@EActivity(R.layout.activity_main2)
+@EActivity(R.layout.abertura)
 public class AberturaAct extends AppCompatActivity {
 
     @AfterViews
