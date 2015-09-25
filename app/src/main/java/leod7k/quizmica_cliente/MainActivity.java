@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
             in = new BufferedReader(new InputStreamReader(
                     socket.getInputStream()));
             App.inst().initOut(new PrintWriter(new OutputStreamWriter(
-                    socket.getOutputStream())));
+                    socket.getOutputStream(), "UTF-8")));
             Log.i("jaba", "Connected to server " + ip + ":"
                     + SERVER_PORT);
         } catch (Exception ioe) {
